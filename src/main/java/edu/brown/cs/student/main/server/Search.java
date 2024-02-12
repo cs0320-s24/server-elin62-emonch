@@ -1,28 +1,21 @@
 package edu.brown.cs.student.main.server;
 
 import edu.brown.cs.student.main.csv.CSVParser;
+import edu.brown.cs.student.main.csv.FactoryFailureException;
 import edu.brown.cs.student.main.csv.MyDataClass;
-
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class Main {
-  private final String[] args;
+public class Search {
 
-  // this is hwo the code is being entered
-  public static void main(String[] args) {
-    new Main(args).run();
+  public Search(String[] args) throws IOException, FactoryFailureException {
+    this.search(args);
   }
 
-  // this is the constructor of the Main class that also initializes the args array
-  public Main(String[] args) {
-    this.args = args;
-  }
-
-  // main method that executes the logic of the program
-  public void run() {
+  public void search(String[] args) {
     // this checks that the user is entering the correct number of arguments and prints informative
     // error message if not
     if (args.length < 4) {
