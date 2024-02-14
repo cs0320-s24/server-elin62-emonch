@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SearchCSVHandler implements Route {
+
+  public SearchCSVHandler(MyDataClass state){
+
+  }
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String csvFilePath = request.queryParams("path");

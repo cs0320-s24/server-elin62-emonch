@@ -1,8 +1,7 @@
 package edu.brown.cs.student.main.csv;
 
 import com.google.gson.Gson;
-import edu.brown.cs.student.main.csv.CSVParser;
-import edu.brown.cs.student.main.csv.MyDataClass; // Assuming this class is suitable for handling CSV rows
+
 import java.io.FileReader;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,10 +10,11 @@ import spark.Response;
 import spark.Route;
 
 public class ViewCSVHandler implements Route {
+
   private final String csvFilePath; // Assume this is initialized elsewhere
 
-  public ViewCSVHandler(String csvFilePath) {
-    this.csvFilePath = csvFilePath;
+  public ViewCSVHandler(MyDataClass csvFilePath) {
+    this.csvFilePath = String.valueOf(csvFilePath);
   }
 
   @Override
