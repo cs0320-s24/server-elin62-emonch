@@ -3,12 +3,16 @@ package edu.brown.cs.student.main.csv;
 import java.util.List;
 
 public class MyDataClass {
-  // list to store the data elemetns (cells) in the row
+  // list to store the data elements (cells) in the row
   private List<String> data;
 
   // Constructor for MyDataClass that takes in a type List<String> as an arg
   public MyDataClass(List<String> data) {
     this.data = data;
+  }
+
+  public void makeCopy(List data){
+    this.data = List.copyOf(data);
   }
 
   // getter method for the data as a List<String>
