@@ -1,19 +1,17 @@
 package edu.brown.cs.student.main.csv;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
-
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 import java.util.stream.Collectors;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 public class SearchCSVHandler implements Route {
 
-  public SearchCSVHandler(MyDataClass state){
+  public SearchCSVHandler(MyDataClass state) {}
 
-  }
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String csvFilePath = request.queryParams("path");
@@ -53,15 +51,16 @@ public class SearchCSVHandler implements Route {
     }
   }
 
-  private List<MyDataClass> filterData(List<MyDataClass> data, int columnIndex, String searchValue) {
+  private List<MyDataClass> filterData(
+      List<MyDataClass> data, int columnIndex, String searchValue) {
     if (columnIndex >= 0) {
       return data.stream()
-              .filter(d -> d.getColumnData(columnIndex).equals(searchValue))
-              .collect(Collectors.toList());
+          .filter(d -> d.getColumnData(columnIndex).equals(searchValue))
+          .collect(Collectors.toList());
     } else {
       return data.stream()
-              .filter(d -> d.getData().contains(searchValue))
-              .collect(Collectors.toList());
+          .filter(d -> d.getData().contains(searchValue))
+          .collect(Collectors.toList());
     }
   }
 
@@ -69,9 +68,7 @@ public class SearchCSVHandler implements Route {
     if (filteredData.isEmpty()) {
       return "No matches found.";
     } else {
-      return filteredData.stream()
-              .map(MyDataClass::toString)
-              .collect(Collectors.joining("\n"));
+      return filteredData.stream().map(MyDataClass::toString).collect(Collectors.joining("\n"));
     }
   }
 }

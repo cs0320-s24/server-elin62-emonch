@@ -9,9 +9,10 @@ public class MyDataClass {
   // Constructor for MyDataClass that takes in a type List<String> as an arg
   public MyDataClass(List<String> data) {
     this.data = data;
+    this.makeCopy(this.data);
   }
 
-  public void makeCopy(List data){
+  public void makeCopy(List data) {
     this.data = List.copyOf(data);
   }
 

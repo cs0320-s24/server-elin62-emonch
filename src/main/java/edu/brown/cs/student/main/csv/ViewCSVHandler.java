@@ -1,7 +1,6 @@
 package edu.brown.cs.student.main.csv;
 
 import com.google.gson.Gson;
-
 import java.io.FileReader;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +24,11 @@ public class ViewCSVHandler implements Route {
       List<MyDataClass> data = parser.parse();
 
       // Convert the list of MyDataClass instances into a 2D List or array if necessary
-      List<List<String>> csvData = data.stream()
-              .map(MyDataClass::getData) // Assuming getData() returns a List<String> representing row data
+      List<List<String>> csvData =
+          data.stream()
+              .map(
+                  MyDataClass
+                      ::getData) // Assuming getData() returns a List<String> representing row data
               .collect(Collectors.toList());
 
       // Convert the 2D List into a JSON string
@@ -41,4 +43,3 @@ public class ViewCSVHandler implements Route {
     }
   }
 }
-

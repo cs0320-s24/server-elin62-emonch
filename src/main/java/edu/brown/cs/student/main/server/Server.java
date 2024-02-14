@@ -1,12 +1,11 @@
-package edu.brown.cs.student.main.csv;
+package edu.brown.cs.student.main.server;
+
+import static spark.Spark.after;
 
 import edu.brown.cs.student.main.census.BroadbandHandler;
 import edu.brown.cs.student.main.csv.*;
-import spark.Spark;
-
 import java.io.IOException;
-
-import static spark.Spark.after;
+import spark.Spark;
 
 public class Server {
   private MyDataClass state;
@@ -18,10 +17,10 @@ public class Server {
     Spark.port(port);
 
     after(
-            (request, response) -> {
-              response.header("Access-Control-Allow-Origin", "*");
-              response.header("Access-Control-Allow-Methods", "*");
-            });
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+        });
 
     // Setting up the handler for the GET /order and /activity endpoints
     Spark.get("loadcsv", new LoadCSVHandler(state));
@@ -31,15 +30,11 @@ public class Server {
     Spark.init();
     Spark.awaitInitialization();
 
-    // Notice this link alone leads to a 404... Why is that?
     System.out.println("Server started at http://localhost:" + port);
   }
 
-  // main method that executes the logic of the program
-//  public void run() throws IOException, FactoryFailureException {
-//  }
-
   public static void main(String[] args) throws IOException, FactoryFailureException {
-//    new Server(args).run();
+    //    Server server = new Server();
+    System.out.println("Server started; exiting main...");
   }
 }
