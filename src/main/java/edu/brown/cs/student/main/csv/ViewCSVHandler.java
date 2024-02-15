@@ -19,7 +19,6 @@ import spark.Route;
 public class ViewCSVHandler<T> implements Route {
 
   private CSVDataSource<T> state;
-  private LoadCSVHandler<T> loadCSVHandler;
 
   public ViewCSVHandler(CSVDataSource state) {
     this.state = state;

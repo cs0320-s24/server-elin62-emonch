@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.csv;
 
-import java.io.IOException;
 import java.util.List;
 import spark.Request;
 import spark.Response;
@@ -10,16 +9,17 @@ import spark.Route;
 public class LoadCSVHandler<T> implements Route {
 
   private CSVDataSource<T> state;
+  private String filePath;
 
-  public LoadCSVHandler(String filepath, CSVDataSource<T> state)
-      throws IOException, FactoryFailureException {
+  public LoadCSVHandler(String filepath, CSVDataSource<T> state) {
     this.state = state;
+    this.filePath = filepath;
   }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
     // Get Query parameters
-    String filePath = request.queryParams("filePath");
+    this.filePath = request.queryParams("filePath");
 
     // Check if filePath is not null and not empty
     if (filePath != null && !filePath.isEmpty()) {

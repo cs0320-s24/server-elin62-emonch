@@ -4,7 +4,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.io.File;
-import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +14,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class SearchCSVHandler implements Route {
-  private final CSVDataSource state;
+public class SearchCSVHandler<T> implements Route {
+  private final CSVDataSource<T> state;
 
-  public SearchCSVHandler(CSVDataSource state) {
+  public SearchCSVHandler(CSVDataSource<T> state) {
     this.state = state;
   }
 
@@ -47,9 +46,10 @@ public class SearchCSVHandler implements Route {
       return adapter.toJson(responseMap);
     }
 
-    try (FileReader fileReader = new FileReader(csvFilePath)) {
-      CSVParser<MyDataClass> parser = new CSVParser<>(fileReader, MyDataClass::new);
-      List<MyDataClass> data = parser.parse();
+    try {
+      //      LoadCSVHandler<T> loadCSV = new LoadCSVHandler<>(csvFilePath, this.state);
+      //      List<MyDataClass> data = loadCSV.handle(request, response);
+      List<MyDataClass> data = this.state.getData();
 
       List<String> headers = null;
       int columnIndex = -1;
@@ -70,6 +70,11 @@ public class SearchCSVHandler implements Route {
       List<MyDataClass> filteredData = filterData(data, columnIndex, searchValue);
 
       // Serialize the filtered data to List<List<String>>
+      //      List<List<String>> serializedData = new ArrayList<>();
+      //      for (List<String> entry : serializedData) {
+      //        serializedData.add(entry);
+      //      }
+
       List<List<String>> serializedData = new ArrayList<>();
       for (MyDataClass entry : filteredData) {
         serializedData.add(entry.getData());
