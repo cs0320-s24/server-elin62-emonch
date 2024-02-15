@@ -1,45 +1,53 @@
 package edu.brown.cs.student.main.csv;
 
-import com.google.gson.Gson;
-import java.io.FileReader;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ViewCSVHandler implements Route {
+/**
+ * Won't be able to view the CSV without loading it first.
+ *
+ * @param <T>
+ */
+public class ViewCSVHandler<T> implements Route {
 
-  private final String csvFilePath; // Assume this is initialized elsewhere
+  private CSVDataSource<T> state;
+  private LoadCSVHandler<T> loadCSVHandler;
 
-  public ViewCSVHandler(MyDataClass csvFilePath) {
-    this.csvFilePath = String.valueOf(csvFilePath);
+  public ViewCSVHandler(CSVDataSource state) {
+    this.state = state;
   }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    // Assume csvFilePath is initialized and points to the CSV file you want to view
-    try (FileReader fileReader = new FileReader(csvFilePath)) {
-      CSVParser<MyDataClass> parser = new CSVParser<>(fileReader, MyDataClass::new);
-      List<MyDataClass> data = parser.parse();
-
-      // Convert the list of MyDataClass instances into a 2D List or array if necessary
-      List<List<String>> csvData =
-          data.stream()
-              .map(
-                  MyDataClass
-                      ::getData) // Assuming getData() returns a List<String> representing row data
-              .collect(Collectors.toList());
-
-      // Convert the 2D List into a JSON string
-      Gson gson = new Gson();
-      String jsonResponse = gson.toJson(csvData);
-
-      response.type("application/json");
-      return jsonResponse;
-    } catch (Exception e) {
-      response.status(500);
-      return "Error processing the request: " + e.getMessage();
+    // Check if the CSV data has been loaded
+    if (this.state == null) {
+      response.status(400); // Bad Request
+      return "CSV data not loaded. Load CSV data first.";
     }
+
+    // Get the CSV data
+    List<MyDataClass> data = this.state.getData();
+
+    // Prepare Moshi for JSON conversion
+    Moshi moshi = new Moshi.Builder().build();
+    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
+    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+
+    // Prepare response map
+    Map<String, Object> responseMap = new HashMap<>();
+
+    // Put CSV data into response map
+    responseMap.put("csvData", data);
+
+    // Return response map as JSON
+    return adapter.toJson(responseMap);
   }
 }
