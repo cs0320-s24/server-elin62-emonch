@@ -118,6 +118,17 @@ public class CensusDataSource {
       } catch (IOException | DataSourceException e) {
         throw e;
       }
+      Map<String, String> countyMap = this.countyCodes.get(state);
+      if (countyMap != null) {
+        // This loop handles case sensitivity by comparing keys in a case-insensitive manner
+        for (Map.Entry<String, String> entry : countyMap.entrySet()) {
+          if (entry.getKey().equalsIgnoreCase(county)) {
+            return entry.getValue();
+          }
+        }
+      }
+      System.out.println("County code for '" + county + "' in state '" + state + "' not found.");
+      return null;
     }
 
     ////    Map<String, String> countyMap = this.countyCodes.get(state);

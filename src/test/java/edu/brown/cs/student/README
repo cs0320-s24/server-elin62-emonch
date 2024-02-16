@@ -40,3 +40,4 @@ or the triangle next to a test, to only run that specific test.
 In order to run the code, you need to enter the maven package (mvn package)
 
 Errors/Bugs:
+Issues with testing classes.
