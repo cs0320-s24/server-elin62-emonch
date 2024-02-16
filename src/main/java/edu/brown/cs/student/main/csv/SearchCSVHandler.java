@@ -96,14 +96,30 @@ public class SearchCSVHandler<T> implements Route {
       List<MyDataClass> data, int columnIndex, String searchValue) {
     if (columnIndex >= 0) {
       return data.stream()
-          .filter(d -> d.getColumnData(columnIndex).equals(searchValue))
+          // Strip quotes from the column data before comparing it with the searchValue
+          .filter(d -> d.getColumnData(columnIndex).replace("\"", "").equals(searchValue))
           .collect(Collectors.toList());
     } else {
+      // Assuming d.getData() returns a List<String> and you want to compare each element
       return data.stream()
-          .filter(d -> d.getData().contains(searchValue))
+          .filter(
+              d ->
+                  d.getData().stream().anyMatch(cell -> cell.replace("\"", "").equals(searchValue)))
           .collect(Collectors.toList());
     }
   }
+  //  private List<MyDataClass> filterData(
+  //      List<MyDataClass> data, int columnIndex, String searchValue) {
+  //    if (columnIndex >= 0) {
+  //      return data.stream()
+  //          .filter(d -> d.getColumnData(columnIndex).equals(searchValue))
+  //          .collect(Collectors.toList());
+  //    } else {
+  //      return data.stream()
+  //          .filter(d -> d.getData().contains(searchValue))
+  //          .collect(Collectors.toList());
+  //    }
+  //  }
 }
 
 //  public SearchCSVHandler(CSVDataSource state) {}
