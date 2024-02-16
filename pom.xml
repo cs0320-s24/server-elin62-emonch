@@ -44,6 +44,26 @@
 
       <!-- Use the latest version available -->
     </dependency>
+
+    <!--
+           Spark is a lightweight framework for creating web applications.
+           Spark is most commonly used to create APIs and websites.
+    -->
+    <dependency>
+      <groupId>com.sparkjava</groupId>
+      <artifactId>spark-core</artifactId>
+      <version>2.9.3</version>
+    </dependency>
+
+    <!--
+           TestNG builds useful functionality on top of JUnit, such as method annotations.
+    -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -68,26 +88,6 @@
       <version>1.13.0</version>
       <scope>test</scope>
     </dependency>
-
-    <!--
-           Spark is a lightweight framework for creating web applications.
-           Spark is most commonly used to create APIs and websites.
-    -->
-    <dependency>
-      <groupId>com.sparkjava</groupId>
-      <artifactId>spark-core</artifactId>
-      <version>2.9.3</version>
-    </dependency>
-
-    <!--
-           TestNG builds useful functionality on top of JUnit, such as method annotations.
-    -->
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>RELEASE</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -110,6 +110,11 @@
       <version>RELEASE</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>31.1-jre</version>
+      </dependency>
 
   </dependencies>
   <build>
