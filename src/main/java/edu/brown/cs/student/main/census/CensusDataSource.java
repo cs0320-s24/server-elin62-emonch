@@ -100,28 +100,34 @@ public class CensusDataSource {
    * @throws DataSourceException
    */
   public String getCountyCode(String state, String county) throws IOException, DataSourceException {
-    // Check if state codes map is populated
     if (this.stateCodes.isEmpty()) {
       try {
         this.requestStateCodes();
       } catch (IOException | DataSourceException e) {
-        // Catch IOException and DataSourceException
         throw e;
       }
     }
 
-    // Check if county codes for this state have already been fetched
     if (!this.countyCodes.containsKey(state)) {
       try {
         this.fetchCountyCodes(state);
       } catch (IOException | DataSourceException e) {
-        // Catch IOException and DataSourceException
         throw e;
       }
     }
 
-    // Return county code if found, otherwise return null
-    return this.countyCodes.getOrDefault(state, new HashMap<>()).get(county);
+    Map<String, String> countyMap = this.countyCodes.get(state);
+    if (countyMap == null) {
+      return null;
+    }
+
+    for (Map.Entry<String, String> entry : countyMap.entrySet()) {
+      if (entry.getKey().equalsIgnoreCase(county)) {
+        return entry.getValue();
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -159,11 +165,59 @@ public class CensusDataSource {
       // Populate county codes map for this state
       Map<String, String> countyMap = new HashMap<>();
       for (List<String> row : body) {
-        countyMap.put(row.get(0), row.get(1));
+        String countyName = row.get(0);
+        String countyCode = row.get(1);
+        countyMap.put(countyName, countyCode);
       }
       this.countyCodes.put(state, countyMap);
+      System.out.println("countyMap: " + countyMap);
     } catch (Exception e) {
       System.out.println(e.getMessage());
+    }
+    System.out.println("countyCodes: " + countyCodes);
+  }
+
+  public String getBroadbandPercentage(String state, String county)
+      throws DataSourceException, IOException {
+    // Check if county code is available
+    String countyCode = this.getCountyCode(state, county);
+    if (countyCode == null) {
+      throw new DataSourceException("County code not found for the provided state and county");
+    }
+
+    // Construct API URL for the broadband percentage data
+    String apiKey = "ef5a11074c6700392d66277e0f5c7b78bd98c6f8";
+    URL requestURL =
+        new URL(
+            "https",
+            "api.census.gov",
+            "/data/2021/acs/acs1/subject/variables?get=NAME,S2802_C03_022E&for=county:"
+                + countyCode
+                + "&in=state:"
+                + stateCodes.get(state)
+                + "&key="
+                + apiKey);
+
+    // Make API call and parse response
+    HttpURLConnection clientConnection = connect(requestURL);
+    Moshi moshi = new Moshi.Builder().build();
+    Type listListString = Types.newParameterizedType(List.class, List.class, String.class);
+    JsonAdapter<List<List<String>>> adapter = moshi.adapter(listListString);
+
+    try {
+      List<List<String>> body =
+          adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+      clientConnection.disconnect();
+      if (body == null || body.isEmpty() || body.get(1).isEmpty()) {
+        throw new DataSourceException(
+            "No broadband percentage data found for the provided state and county");
+      }
+
+      // Extract broadband percentage from response
+      return body.get(1).get(0);
+    } catch (Exception e) {
+      throw new DataSourceException(
+          "Error retrieving broadband percentage data from Census API: " + e.getMessage());
     }
   }
 }

@@ -51,18 +51,28 @@ public class BroadbandHandler implements Route {
     Map<String, String> deserializedStateCodes =
         CensusDataUtilities.deserializeStateCodes(stateCodesJson);
 
-    // Prepare the response map
-    responseMap.put("Date and Time of Data Retrieval", formattedDateTime);
-    responseMap.put("State Name Received", state);
-    responseMap.put("County Name Received", county);
+    try {
+      // Retrieve the percentage of households with broadband access
+      String broadbandPercentage = censusDataSource.getBroadbandPercentage(state, county);
 
-    // Convert response map to JSON and set it as response body
-    String responseBody = adapter.toJson(responseMap);
+      // Prepare the response map
+      responseMap.put("Date and Time of Data Retrieval", formattedDateTime);
+      responseMap.put("State Name Received", state);
+      responseMap.put("County Name Received", county);
+      responseMap.put("Broadband Percentage", broadbandPercentage);
 
-    // Set response content type
-    response.type("application/json");
+      // Convert response map to JSON and set it as response body
+      String responseBody = adapter.toJson(responseMap);
 
-    // Return the response body
-    return responseBody;
+      // Set response content type
+      response.type("application/json");
+
+      // Return the response body
+      return responseBody;
+    } catch (DataSourceException e) {
+      // Handle DataSourceException
+      response.status(500); // Internal Server Error
+      return "Error occurred: " + e.getMessage();
+    }
   }
 }
