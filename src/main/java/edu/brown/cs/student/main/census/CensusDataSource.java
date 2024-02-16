@@ -12,7 +12,7 @@ import java.util.Map;
 import okio.Buffer;
 
 public class CensusDataSource {
-  private Map<String, String> stateCodes;
+  private Map<String, String> stateCodes; // stores state names with state codes
   private Map<String, Map<String, String>> countyCodes;
 
   public CensusDataSource() {
@@ -101,33 +101,54 @@ public class CensusDataSource {
    */
   public String getCountyCode(String state, String county) throws IOException, DataSourceException {
     if (this.stateCodes.isEmpty()) {
+      System.out.println("State codes is empty.");
       try {
         this.requestStateCodes();
+        System.out.println("Request state codes");
       } catch (IOException | DataSourceException e) {
         throw e;
       }
     }
 
     if (!this.countyCodes.containsKey(state)) {
+      System.out.println("this.countyCodes doesn't contain state");
       try {
-        this.fetchCountyCodes(state);
+        this.requestCountyCodes(state);
+        System.out.println("Fetch county codes");
       } catch (IOException | DataSourceException e) {
         throw e;
       }
     }
 
-    Map<String, String> countyMap = this.countyCodes.get(state);
-    if (countyMap == null) {
-      return null;
-    }
+    ////    Map<String, String> countyMap = this.countyCodes.get(state);
+    ////    System.out.println("County Map");
+    ////    System.out.println(countyMap);
+    //    if (countyMap == null) {
+    //      System.out.println("County map is null");
+    //      return null;
+    //    }
+    //
+    //    // iterate through countyMap to find the county, then get the county's code
+    //    for (Map.Entry<String, String> entry : countyMap.entrySet()) {
+    //      System.out.println("for loop started");
+    //      if (entry.getKey().equalsIgnoreCase(county)) {
+    //        return entry.getValue();
+    //      }
+    //    }
+    //    System.out.println("End of get county code method");
 
-    for (Map.Entry<String, String> entry : countyMap.entrySet()) {
-      if (entry.getKey().equalsIgnoreCase(county)) {
-        return entry.getValue();
-      }
-    }
+    // instead of creating new county map, just use county code field
+    System.out.println(county);
+    System.out.println("this.countyCodes.get(state)");
+    System.out.println(this.countyCodes.get(state));
+    System.out.println("this.countyCodes.get(state).get(county)");
+    System.out.println(this.countyCodes.get(state).get(county));
 
-    return null;
+    System.out.println(this.countyCodes.get(state).containsValue(county));
+    System.out.println("this.countyCodes.get(state).entrySet()");
+    System.out.println(this.countyCodes.get(state).entrySet());
+    return this.countyCodes.get(state).get(county);
+    //    return null;
   }
 
   /**
@@ -138,7 +159,7 @@ public class CensusDataSource {
    * @throws IOException
    * @throws DataSourceException
    */
-  private void fetchCountyCodes(String state) throws IOException, DataSourceException {
+  private void requestCountyCodes(String state) throws IOException, DataSourceException {
     String apiKey = "ef5a11074c6700392d66277e0f5c7b78bd98c6f8";
     URL requestURL =
         new URL(
@@ -164,20 +185,22 @@ public class CensusDataSource {
 
       // Populate county codes map for this state
       Map<String, String> countyMap = new HashMap<>();
-      for (List<String> row : body) {
-        String countyName = row.get(0);
-        String countyCode = row.get(1);
+      // Skip the first row as it contains headers
+      for (int i = 1; i < body.size(); i++) {
+        List<String> row = body.get(i);
+        String countyName = row.get(0); // County name is the first element
+        String countyCode = row.get(2); // County code is the fourth element
         countyMap.put(countyName, countyCode);
       }
       this.countyCodes.put(state, countyMap);
-      System.out.println("countyMap: " + countyMap);
+      System.out.println("county codes");
+      System.out.println(countyCodes);
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
-    System.out.println("countyCodes: " + countyCodes);
   }
 
-  public String getBroadbandPercentage(String state, String county)
+  public String requestBroadbandPercentage(String state, String county)
       throws DataSourceException, IOException {
     // Check if county code is available
     String countyCode = this.getCountyCode(state, county);

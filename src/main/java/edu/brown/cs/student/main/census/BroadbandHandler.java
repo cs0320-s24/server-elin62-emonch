@@ -38,27 +38,24 @@ public class BroadbandHandler implements Route {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedDateTime = currentTime.format(formatter);
 
-    // Assuming you have a method to get state codes from CensusDataSource
+    // Get state codes from CensusDataSource
     Map<String, String> stateCodes = censusDataSource.getStateCodes();
-
-    // Assuming you have a method to get county codes from CensusDataSource
-    String countyCode = censusDataSource.getCountyCode(state, county);
 
     // Serialize stateCodes to JSON
     String stateCodesJson = CensusDataUtilities.serializeStateCodes(stateCodes);
 
-    // Deserialize stateCodes from JSON (Example)
+    // Deserialize stateCodes from JSON
     Map<String, String> deserializedStateCodes =
         CensusDataUtilities.deserializeStateCodes(stateCodesJson);
 
     try {
-      // Retrieve the percentage of households with broadband access
-      String broadbandPercentage = censusDataSource.getBroadbandPercentage(state, county);
 
       // Prepare the response map
       responseMap.put("Date and Time of Data Retrieval", formattedDateTime);
       responseMap.put("State Name Received", state);
       responseMap.put("County Name Received", county);
+      // Retrieve the percentage of households with broadband access
+      String broadbandPercentage = censusDataSource.requestBroadbandPercentage(state, county);
       responseMap.put("Broadband Percentage", broadbandPercentage);
 
       // Convert response map to JSON and set it as response body
