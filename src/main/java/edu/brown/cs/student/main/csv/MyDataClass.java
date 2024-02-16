@@ -11,7 +11,6 @@ public class MyDataClass {
   public MyDataClass(List<String> data) {
     this.data = this.cleanData(data);
     this.data = List.copyOf(this.data);
-    System.out.println(this.data);
   }
 
   private List<String> cleanData(List<String> rawData) {

@@ -1,47 +1,68 @@
 package edu.brown.cs.student.main.census;
 
-import com.google.gson.Gson;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/** */
 public class BroadbandHandler implements Route {
+
+  private CensusDataSource censusDataSource;
+
+  public BroadbandHandler(CensusDataSource dataSource) {
+    this.censusDataSource = dataSource;
+  }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
+    // Create a response map
+    Moshi moshi = new Moshi.Builder().build();
+    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
+    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+    Map<String, Object> responseMap = new HashMap<>();
+
     // Extract query parameters for state and county from the request
     String state = request.queryParams("state");
     String county = request.queryParams("county");
 
-    // Placeholder for data retrieval logic
-    String broadbandData = getBroadbandData(state, county);
+    // Get the current date and time
+    LocalDateTime currentTime = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    String formattedDateTime = currentTime.format(formatter);
 
-    // Setup response type as JSON
+    // Assuming you have a method to get state codes from CensusDataSource
+    Map<String, String> stateCodes = censusDataSource.getStateCodes();
+
+    // Assuming you have a method to get county codes from CensusDataSource
+    String countyCode = censusDataSource.getCountyCode(state, county);
+
+    // Serialize stateCodes to JSON
+    String stateCodesJson = CensusDataUtilities.serializeStateCodes(stateCodes);
+
+    // Deserialize stateCodes from JSON (Example)
+    Map<String, String> deserializedStateCodes =
+        CensusDataUtilities.deserializeStateCodes(stateCodesJson);
+
+    // Prepare the response map
+    responseMap.put("Date and Time of Data Retrieval", formattedDateTime);
+    responseMap.put("State Name Received", state);
+    responseMap.put("County Name Received", county);
+
+    // Convert response map to JSON and set it as response body
+    String responseBody = adapter.toJson(responseMap);
+
+    // Set response content type
     response.type("application/json");
 
-    // Use Gson to convert your data to JSON for the response
-    Gson gson = new Gson();
-    Map<String, Object> responseData = new HashMap<>();
-    if (broadbandData != null) {
-      responseData.put("result", "success");
-      responseData.put("data", broadbandData);
-    } else {
-      responseData.put("result", "error");
-      responseData.put("message", "Data not found for the specified location.");
-    }
-
-    return gson.toJson(responseData);
-  }
-
-  private String getBroadbandData(String state, String county) {
-    // Simulate data retrieval. In a real application, you would query your data source here.
-    // This is just a placeholder to simulate the process.
-    if (state != null && county != null) {
-      // This would be replaced with actual data fetching logic
-      return "Sample broadband data for " + county + ", " + state;
-    }
-    return null;
+    // Return the response body
+    return responseBody;
   }
 }
