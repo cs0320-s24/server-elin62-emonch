@@ -149,16 +149,10 @@ public class CensusDataSource {
     //    System.out.println("End of get county code method");
 
     // instead of creating new county map, just use county code field
-    System.out.println(county);
-    System.out.println("this.countyCodes.get(state)");
-    System.out.println(this.countyCodes.get(state));
     System.out.println("this.countyCodes.get(state).get(county)");
     System.out.println(this.countyCodes.get(state).get(county));
-
-    System.out.println(this.countyCodes.get(state).containsValue(county));
-    System.out.println("this.countyCodes.get(state).entrySet()");
-    System.out.println(this.countyCodes.get(state).entrySet());
     return this.countyCodes.get(state).get(county);
+
     //    return null;
   }
 
@@ -199,8 +193,8 @@ public class CensusDataSource {
       // Skip the first row as it contains headers
       for (int i = 1; i < body.size(); i++) {
         List<String> row = body.get(i);
-        String countyName = row.get(0); // County name is the first element
-        String countyCode = row.get(2); // County code is the fourth element
+        String countyName = row.get(0).split(",")[0]; // Extracting county name without state
+        String countyCode = row.get(2); // County code is the third element
         countyMap.put(countyName, countyCode);
       }
       this.countyCodes.put(state, countyMap);
@@ -215,6 +209,7 @@ public class CensusDataSource {
       throws DataSourceException, IOException {
     // Check if county code is available
     String countyCode = this.getCountyCode(state, county);
+    System.out.println(countyCode);
     if (countyCode == null) {
       throw new DataSourceException("County code not found for the provided state and county");
     }
@@ -241,6 +236,7 @@ public class CensusDataSource {
     try {
       List<List<String>> body =
           adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+      System.out.println(body);
       clientConnection.disconnect();
       if (body == null || body.isEmpty() || body.get(1).isEmpty()) {
         throw new DataSourceException(
@@ -248,7 +244,7 @@ public class CensusDataSource {
       }
 
       // Extract broadband percentage from response
-      return body.get(1).get(0);
+      return body.get(1).get(1);
     } catch (Exception e) {
       throw new DataSourceException(
           "Error retrieving broadband percentage data from Census API: " + e.getMessage());
