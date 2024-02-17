@@ -1,58 +1,60 @@
-package edu.brown.cs.student;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+ package edu.brown.cs.student;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+ import static org.junit.Assert.*;
+ import static org.mockito.Mockito.*;
 
-import edu.brown.cs.student.main.census.CensusDataSource;
-import edu.brown.cs.student.main.census.DataSourceException;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-public class CensusDataSourceTest {
-    private CensusDataSource dataSource;
+ import edu.brown.cs.student.main.census.CensusDataSource;
+ import edu.brown.cs.student.main.census.DataSourceException;
+ import java.io.ByteArrayInputStream;
+ import java.io.IOException;
+ import java.net.HttpURLConnection;
+ import org.junit.Before;
+ import org.junit.Test;
+ import org.mockito.Mock;
 
-    @Mock
-    private HttpURLConnection mockHttpURLConnection;
+ public class CensusDataSourceTest {
+  private CensusDataSource dataSource;
 
-    @Before
-    public void setUp() throws Exception {
-//        MockitoAnnotations.initMocks(this);
-//        dataSource = new CensusDataSource() {
-//            @Override
-//            protected HttpURLConnection connect(URL url) {
-//                return mockHttpURLConnection;
-//            }
-//        };
-    }
+  @Mock private HttpURLConnection mockHttpURLConnection;
 
-    @Test
-    public void testRequestBroadbandPercentage() throws IOException, DataSourceException {
-        // Assuming state codes have been fetched successfully
-        String mockStateCodesResponse = "[[\"NAME\",\"state\"],[\"Rhode Island\",\"44\"]]";
-        when(mockHttpURLConnection.getInputStream()).thenReturn(new ByteArrayInputStream(mockStateCodesResponse.getBytes()));
-        when(mockHttpURLConnection.getResponseCode()).thenReturn(200);
-        dataSource.requestStateCodes(); // Populate state codes
+  @Before
+  public void setUp() throws Exception {
+    //        MockitoAnnotations.initMocks(this);
+    //        dataSource = new CensusDataSource() {
+    //            @Override
+    //            protected HttpURLConnection connect(URL url) {
+    //                return mockHttpURLConnection;
+    //            }
+    //        };
+  }
 
-        // Mocking HTTP connection for county codes request
-        String mockCountyCodesResponse = "[[\"NAME\",\"state\",\"county\"],[\"Providence County\",\"44\",\"001\"]]";
-        when(mockHttpURLConnection.getInputStream()).thenReturn(new ByteArrayInputStream(mockCountyCodesResponse.getBytes()));
+  @Test
+  public void testRequestBroadbandPercentage() throws IOException, DataSourceException {
+    // Assuming state codes have been fetched successfully
+    String mockStateCodesResponse = "[[\"NAME\",\"state\"],[\"Rhode Island\",\"44\"]]";
+    when(mockHttpURLConnection.getInputStream())
+        .thenReturn(new ByteArrayInputStream(mockStateCodesResponse.getBytes()));
+    when(mockHttpURLConnection.getResponseCode()).thenReturn(200);
+    dataSource.requestStateCodes(); // Populate state codes
 
-        // Assume that the request for broadband percentage is successful
-        String mockBroadbandResponse = "[[\"NAME\",\"S2802_C03_022E\",\"state\",\"county\"],[\"Providence County, Rhode Island\",\"75%\",\"44\",\"001\"]]";
-        when(mockHttpURLConnection.getInputStream()).thenReturn(new ByteArrayInputStream(mockBroadbandResponse.getBytes()));
+    // Mocking HTTP connection for county codes request
+    String mockCountyCodesResponse =
+        "[[\"NAME\",\"state\",\"county\"],[\"Providence County\",\"44\",\"001\"]]";
+    when(mockHttpURLConnection.getInputStream())
+        .thenReturn(new ByteArrayInputStream(mockCountyCodesResponse.getBytes()));
 
-        // Act
-        String broadbandPercentage = dataSource.requestBroadbandPercentage("Rhode Island", "Providence");
+    // Assume that the request for broadband percentage is successful
+    String mockBroadbandResponse =
+        "[[\"NAME\",\"S2802_C03_022E\",\"state\",\"county\"],[\"Providence County, " +
+                "Rhode Island\",\"75%\",\"44\",\"001\"]]";
+    when(mockHttpURLConnection.getInputStream())
+        .thenReturn(new ByteArrayInputStream(mockBroadbandResponse.getBytes()));
 
-        // Assert
-        assertEquals("Broadband percentage should be 75%", "75%", broadbandPercentage);
-    }
+    // Act
+    String broadbandPercentage =
+        dataSource.requestBroadbandPercentage("Rhode Island", "Providence");
 
-}
+    // Assert
+    assertEquals("Broadband percentage should be 75%", "75%", broadbandPercentage);
+  }
+ }

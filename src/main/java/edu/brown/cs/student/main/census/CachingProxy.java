@@ -8,11 +8,17 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class Caching implements Route {
+/**
+ * This class mediates access to the data by intercepting requests for data from the census data
+ * source. Instead of directly accessing the data source from BroadbandHandler, the handler
+ * interacts with CachingProxy. The proxy then decides whether to fetch the data from the census
+ * data source or retrieve it from the cache.
+ */
+public class CachingProxy implements Route {
   private CensusDataSource censusDataSource;
-  LoadingCache<String, Object> cache;
+  private LoadingCache<String, Object> cache;
 
-  public Caching(CensusDataSource dataSource) {
+  public CachingProxy(CensusDataSource dataSource) {
     this.censusDataSource = dataSource;
     this.cache =
         CacheBuilder.newBuilder()
@@ -38,15 +44,8 @@ public class Caching implements Route {
     String county = request.queryParams("county");
     String cacheKey = state + "_" + county;
 
-    Object cachedData = cache.get(cacheKey);
-
-    if (cachedData != null) {
-      // If data found in cache, return it
-      return cachedData;
-    } else {
-      // If data not found in cache, load it using CacheLoader's load method
-      return cache.get(cacheKey);
-    }
+    // If data found in cache, return it
+    return this.cache.get(cacheKey);
   }
 
   private Object fetchData(String cacheKey) {

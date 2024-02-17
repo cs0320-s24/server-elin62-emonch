@@ -11,6 +11,16 @@ import java.util.List;
 import java.util.Map;
 import okio.Buffer;
 
+/**
+ * The CensusDataSource class provides methods to interact with the Census API and retrieve data
+ * related to state and county codes, as well as broadband percentage information.
+ *
+ * <p>It includes functionality to fetch state codes, county codes for a given state, and broadband
+ * percentage data for a specific state and county.
+ *
+ * <p>This class utilizes the Gson library for JSON parsing and HttpURLConnection for making API
+ * requests. It also includes error handling for API requests and data retrieval operations.
+ */
 public class CensusDataSource {
   private Map<String, String> stateCodes; // stores state names with state codes
   private Map<String, Map<String, String>> countyCodes;

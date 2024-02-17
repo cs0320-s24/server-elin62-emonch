@@ -12,13 +12,19 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/** */
+/**
+ * The BroadbandHandler class implements the Spark Route interface to handle HTTP requests. It is
+ * responsible for retrieving data related to broadband access percentages for households from the
+ * CensusDataSource and providing a response in JSON format.
+ */
 public class BroadbandHandler implements Route {
 
   private CensusDataSource censusDataSource;
+  private CachingProxy cache;
 
   public BroadbandHandler(CensusDataSource dataSource) {
     this.censusDataSource = dataSource;
+    this.cache = new CachingProxy(dataSource);
   }
 
   @Override

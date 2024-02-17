@@ -1,26 +1,26 @@
-package edu.brown.cs.student;
+ package edu.brown.cs.student;
 
 
-import static org.mockito.Mockito.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+ import static org.mockito.Mockito.*;
+ import static org.testng.Assert.assertEquals;
+ import static org.testng.AssertJUnit.assertNotNull;
+ import static org.testng.AssertJUnit.assertTrue;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.census.BroadbandHandler;
-import edu.brown.cs.student.main.census.CensusDataSource;
-import edu.brown.cs.student.main.census.DataSourceException;
-import org.junit.Before;
-import org.junit.Test;
-import spark.Request;
-import spark.Response;
+ import com.squareup.moshi.JsonAdapter;
+ import com.squareup.moshi.Moshi;
+ import com.squareup.moshi.Types;
+ import edu.brown.cs.student.main.census.BroadbandHandler;
+ import edu.brown.cs.student.main.census.CensusDataSource;
+ import edu.brown.cs.student.main.census.DataSourceException;
+ import org.junit.Before;
+ import org.junit.Test;
+ import spark.Request;
+ import spark.Response;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-public class BroadBandHandlerTest {
+ import java.lang.reflect.Type;
+ import java.util.HashMap;
+ import java.util.Map;
+ public class BroadBandHandlerTest {
     private BroadbandHandler broadbandHandler;
     private CensusDataSource mockDataSource;
     private Request mockRequest;
@@ -42,7 +42,8 @@ public class BroadBandHandlerTest {
         // Setup the mock behavior
         when(mockRequest.queryParams("state")).thenReturn("Rhode Island");
         when(mockRequest.queryParams("county")).thenReturn("Providence");
-        when(mockDataSource.requestBroadbandPercentage("Rhode Island", "Providence")).thenReturn("75%");
+        when(mockDataSource.requestBroadbandPercentage("Rhode Island",
+ "Providence")).thenReturn("75%");
 
         // Execute the handle method
         Object result = broadbandHandler.handle(mockRequest, mockResponse);
@@ -62,7 +63,8 @@ public class BroadBandHandlerTest {
         // Setup mock to throw an exception
         when(mockRequest.queryParams("state")).thenReturn("Invalid State");
         when(mockRequest.queryParams("county")).thenReturn("Invalid County");
-        when(mockDataSource.requestBroadbandPercentage(anyString(), anyString())).thenThrow(new DataSourceException("Data not found"));
+        when(mockDataSource.requestBroadbandPercentage(anyString(), anyString())).thenThrow(new
+ DataSourceException("Data not found"));
 
         // Execute the handle method
         Object result = broadbandHandler.handle(mockRequest, mockResponse);
@@ -86,7 +88,8 @@ public class BroadBandHandlerTest {
         // this test expects normal execution. Adjust according to your implementation.
         assertNotNull(result);
 
-        // To improve, your handler could check for parameter existence and return appropriate errors.
+        // To improve, your handler could check for parameter existence and return appropriate
+ errors.
     }
 
     @Test
@@ -94,7 +97,8 @@ public class BroadBandHandlerTest {
         // Setup the mock behavior
         when(mockRequest.queryParams("state")).thenReturn("Rhode Island");
         when(mockRequest.queryParams("county")).thenReturn("Providence");
-        when(mockDataSource.requestBroadbandPercentage("Rhode Island", "Providence")).thenReturn("75%");
+        when(mockDataSource.requestBroadbandPercentage("Rhode Island",
+ "Providence")).thenReturn("75%");
 
         // Execute the handle method
         String result = (String) broadbandHandler.handle(mockRequest, mockResponse);
@@ -112,4 +116,4 @@ public class BroadBandHandlerTest {
         assertEquals("Providence", resultMap.get("County Name Received"));
         assertEquals("75%", resultMap.get("Broadband Percentage"));
     }
-}
+ }

@@ -1,7 +1,3 @@
-JUnit tests should go in this directory.
-
-Make sure you package these classes properly so that you earn the Code Organization Badge!
-
 Sprint 1: CSV
 Team members: elin62
 Time allocated: 16h
